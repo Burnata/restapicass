@@ -9,17 +9,18 @@ regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
 
 def post(self):
     session = cluster.connect('node')
-    rows = session.execute("SELECT content")
+    rows = session.execute("SELECT *")
     return rows
 
-def post(email,title,content,magic):
-    if (re.search(regex, email)):
-        print()
+
+def post(email, title, content, magic):
+    if re.search(regex, email):
+        session = cluster.connect('node')
+        session.execute("INSERT INTO node (email,title,content,magic_number) VALUES (%s,%s,%s,%s)",
+                        (email, title, content, magic))
     else:
         print("Invalid Email")
-    session = cluster.connect('node')
-    session.execute("INSERT INTO node (email,title,content,magic_number) "
-                               "VALUES(email,title,content,magic)")
+
 
 def get(self):
     session = cluster.connect('node')
