@@ -8,10 +8,11 @@ cluster = Cluster(["0.0.0.0"])
 regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
 
 
-def post(self):
+def post(magic):
     session = cluster.connect(["0.0.0.0"])
     session.row_factory = tuple_factory
-    rows = session.execute("SELECT *")
+    rows = session.execute("SELECT %s FROM node", magic)
+    session.execute("DELETE FROM node WHERE magic_number IN (%s)", magic)
     return rows
 
 
