@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  cassandra:
+    container_name: cassandra
+    image: cassandra:latest
+    ports:
+      -9042:9042
+  app:
+    image: table
+    depends_on:
+      - cassandra
+  web:
+    build:
+      context: .
+      dockerfile: 'Dockerfile.txt'
+    ports:
+      - "8080:8080"

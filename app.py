@@ -1,13 +1,15 @@
 import re
 
+from flask import Flask
 from cassandra.cluster import Cluster
 from cassandra.query import tuple_factory
 
-
+app = Flask(__name__)
 cluster = Cluster(["0.0.0.0"])
 regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
 
 
+@app.route("/api/post")
 def post(magic):
     session = cluster.connect(["0.0.0.0"])
     session.row_factory = tuple_factory
@@ -16,6 +18,7 @@ def post(magic):
     return rows
 
 
+@app.route("/api/message")
 def post(email, title, content, magic):
     if re.search(regex, email):
         session = cluster.connect(["0.0.0.0"])
@@ -25,6 +28,7 @@ def post(email, title, content, magic):
         print("Invalid Email")
 
 
+@app.route("/api/message/{emailValue}")
 def get(self):
     session = cluster.connect(["0.0.0.0"])
     session.row_factory = tuple_factory

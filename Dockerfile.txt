@@ -1,0 +1,9 @@
+FROM python:3.7-alpine
+WORKDIR	/code
+ENV FLASK_APP app.py
+ENV table.py
+ENV FLASK_RUN_HOST 0.0.0.0
+COPY requirements.txt requierments.txt
+RUN pip install -r requierments.txt
+COPY . .
+CMD ["flask", "run"]
