@@ -1,9 +1,9 @@
-FROM python:3.7-alpine
+FROM python:3
 WORKDIR	/code
 ENV FLASK_APP app.py
-ENV table.py
 ENV FLASK_RUN_HOST 0.0.0.0
-COPY requirements.txt requierments.txt
-RUN pip install -r requierments.txt
-COPY . .
+COPY requirements.txt requirements.txt
+RUN apt-get update
+RUN pip install -r requirements.txt
+EXPOSE 8080
 CMD ["flask", "run"]
