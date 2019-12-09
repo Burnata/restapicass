@@ -5,13 +5,12 @@ services:
     container_name: cassandra
     image: cassandra:latest
     ports:
-      - 9042:9042
+      - "9042:9042"
   web:
     build:
       context: .
       dockerfile: 'Dockerfile.txt'
     depends_on:
       - "cassandra"
-    command: ["./wait-for-it.sh", "--", "python", "app.py"]
     ports:
       - "8080:8080"
