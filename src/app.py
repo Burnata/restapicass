@@ -27,7 +27,7 @@ def table():
 #    x = x + 1
 
 
-@app.route("/api/send/")
+@app.route("/api/send/", methods=["POST"])
 def post(magic):
     session = cluster.connect(["0.0.0.0"])
     session.row_factory = tuple_factory
@@ -36,8 +36,8 @@ def post(magic):
     return rows
 
 
-@app.route("/api/message/")
-def post(email, title, content, magic):
+@app.route("/api/message/", methods=["POST"])
+def posted(email, title, content, magic):
     if re.search(regex, email):
         session = cluster.connect(["0.0.0.0"])
         session.execute("INSERT INTO node (email,title,content,magic_number) VALUES (%s,%s,%s,%s)",
@@ -46,7 +46,7 @@ def post(email, title, content, magic):
         return "Invalid Email"
 
 
-@app.route("/api/message/{text:email}")
+@app.route("/api/message/{text:email}", methods=["GET"])
 def get(email):
     if re.search(regex, email):
         session = cluster.connect(["0.0.0.0"])
