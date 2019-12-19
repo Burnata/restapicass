@@ -6,7 +6,7 @@ import flask
 from flask import Flask, Response
 from cassandra.cluster import Cluster
 from JSON import util
-from data.postmagic import postmagi
+from data import postmagic
 from src.keyspace_creation import create
 
 app = Flask(__name__)
@@ -38,7 +38,7 @@ def post():
     rows = session.execute('SELECT %s FROM mode', magic_number=data["magic_number"])
     for data["magic_number"] in rows:
         session.execute('DELETE FROM mode WHERE magic_number IN (%s)', magic_number=data["magic_number"])
-        return postmagi.get_data()
+        return postmagic.get_data()
 
 
 @app.route('/api/message', methods=['POST', 'GET'])
