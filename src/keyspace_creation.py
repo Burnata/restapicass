@@ -11,15 +11,16 @@ def create():
     session.execute("CREATE KEYSPACE IF NOT EXISTS test WITH REPLICATION = { 'class' : 'SimpleStrategy', "
                     "'replication_factor' : 1 }")
     session.set_keyspace("test")
-    session.execute('CREATE TABLE IF NOT EXISTS mode  ('
-                    'id text'
+    session.execute('CREATE TABLE IF NOT EXISTS mode ('
+                    'id text PRIMARY KEY,'
                     'email text,'
-                    ' title text,'
-                    ' content text,'
-                    ' magic_number int'
+                    'title text,'
+                    'content text,'
+                    'magic_number int'
                     ')')
 
-# def timed():
-#    if t / 300 >= 0:
-#        session.execute('TRUNCATE mode')
-#        t = 0
+
+def timed():
+    if t / 300 >= 0:
+        session.execute('TRUNCATE mode')
+        t = 0
