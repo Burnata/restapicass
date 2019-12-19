@@ -1,5 +1,5 @@
 requests
-flask==1.0
+flask==1.1.1
 cassandra-driver==3.20.2
 Cluster==1.4.1
 MarkupSafe==0.23
