@@ -1,0 +1,17 @@
+from cassandra.cqlengine import columns
+from data.Base import Base
+
+
+class postmagi(Base):
+    email = columns.Text(primary_key=True)
+    title = columns.Text()
+    content = columns.Text()
+    magic_number = columns.Integer()
+
+    def get_data(self):
+        return {
+            'email': str.email,
+            'title': self.title,
+            'content': self.content,
+            'magic_number': self.magic_number
+        }

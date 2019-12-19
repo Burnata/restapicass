@@ -4,9 +4,19 @@ services:
   cassandra:
     container_name: cassandra
     image: cassandra:latest
+    hostname: cassandra
     ports:
       - "9042:9042"
+    environment:
+      - CASSANDRA_START_RPC=true
+      - CASSANDRA_RPC_HOST=0.0.0.0
+      - CASSANDRA_CLUSTER_NAME=cassandra
+      - CASSANDRA_ENPOINT_SNITCH=GosspipingPropertyFileSnitch
+      - CASSADRA_DC=mode
+    networks:
+      - restapicass
   web:
+    container_name: web
     build:
       context: .
       dockerfile: 'Dockerfile'
@@ -14,3 +24,9 @@ services:
       - "cassandra"
     ports:
       - "8080:8080"
+    networks:
+      - restapicass
+networks:
+  restapicass:
+    external: False
+
