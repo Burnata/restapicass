@@ -1,7 +1,10 @@
 import time
 
 from cassandra.cluster import Cluster
-from cassandra.cqlengine.connection import session
+
+cluster = Cluster(["cassandra"], protocol_version=3)
+session = cluster.connect()
+t = time.clock()
 
 
 def create():
@@ -9,16 +12,14 @@ def create():
                     "'replication_factor' : 1 }")
     session.set_keyspace("test")
     session.execute('CREATE TABLE IF NOT EXISTS mode  ('
-                    'email text PRIMARY KEY,'
+                    'id text'
+                    'email text,'
                     ' title text,'
                     ' content text,'
                     ' magic_number int'
                     ')')
 
-
-t0 = time.clock()
-y = 1
-
-if time.clock() / 300 * y == 0:
-    session.execute('TRUNCATE mode')
-    y = y + 1
+# def timed():
+#    if t / 300 >= 0:
+#        session.execute('TRUNCATE mode')
+#        t = 0
