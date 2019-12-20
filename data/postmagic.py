@@ -3,7 +3,7 @@ from data.Base import Base
 import uuid
 
 
-class Postmagic(Base):
+class magic(Base):
     id = columns.UUID(primary_key=True, default=uuid.uuid4())
     email = columns.Text()
     title = columns.Text()

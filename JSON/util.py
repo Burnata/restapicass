@@ -2,4 +2,4 @@ import json
 
 
 def to_json(data):
-    return json.dumps(data, default=dict)
+    return json.dumps(data, default=str)
