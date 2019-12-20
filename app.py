@@ -1,10 +1,9 @@
 import json
 import time
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from cassandra.cluster import Cluster
 from src.keyspace_creation import create
-
-# time.sleep(120) #uncommenct on push
+from werkzeug.datastructures import ImmutableMultiDict
 
 app = Flask(__name__)
 
@@ -26,13 +25,30 @@ def post():
 
 @app.route('/api/message', methods=['POST'])
 def posted():
-    data = request.dict_storage_class
-    raw = json.dumps(data)
-    session.execute("INSERT INTO test.mode JSON %s" % raw)
-    return print('1')
+    data = dict(request.form)
+    kpop = data.keys()
+    pop = str(list(kpop))
+    onepop = pop.replace("[", "")
+    twopop = onepop.replace('{', "")
+    threepop = twopop.replace(']', "")
+    fourpop = threepop.replace('}', "")
+    fivepop = fourpop.replace('"', "")
+    sixpop = fivepop.replace("'", "")
+    rpop = sixpop.split(",")
+    rw = json.dumps(rpop)
+    #hw = jsonify(rw)
+    #session.execute("INSERT INTO test.mode JSON %s" % hw)
+    return rw
+
+
+# @app.route('/api/message', methods=['POST'])
+# def posted():
+#    lm = request.data
+#    print(lm)
+#    return jsonify({'1'})
 
 
 @app.route('/api/messages/<email>', methods=['GET'])
 def get(email):
-    rows = session.execute("SELECT* FROM mode WHERE email in %s" % email)
+    rows = session.execute("SELECT* FROM mode WHERE email IN %s" % email)
     return print(rows)
