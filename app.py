@@ -1,13 +1,8 @@
 import json
 import time
-from functools import wraps
-import flask
-from flask import Flask, Response, request
+from flask import Flask, request
 from cassandra.cluster import Cluster
-from JSON import util
-from data.postmagic import magic
 from src.keyspace_creation import create
-import requests
 
 # time.sleep(120) #uncommenct on push
 
@@ -19,38 +14,25 @@ session = cluster.connect()
 create()
 
 
-def json_api(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        result = f(*args, **kwargs)  # Call Function
-        json_result = util.to_json(result)
-        return Response(response=json_result,
-                        status=200,
-                        mimetype="application/json")
-
-    return decorated_function
-
-
 @app.route('/api/send', methods=['POST'])
 def post():
-    data = json.loads(request.from_values, encoding=dict)
-    magic_number = data["magic_number"]
-    rows = session.execute('SELECT %s FROM mode', magic_number)
-    for data["magic_number"] in rows:
-        session.execute('DELETE FROM mode WHERE magic_number IN (%s)', magic_number)
+    raw = json.dumps(request.json)
+    magic_number = raw["magic_number"]
+    rows = session.execute('SELECT %s FROM mode' % magic_number)
+    for magic_number in rows:
+        session.execute('DELETE FROM mode WHERE magic_number IN %s' % magic_number)
     return print(rows)
 
 
 @app.route('/api/message', methods=['POST'])
 def posted():
-    raw = json.dumps(request.json)
-    data = json.loads(raw)
-    magic.create(email=data["email"], title=data["title"], content=data["content"], magic_number=data["magic_number"])
-    magic.save()
-    return print(magic.get_data())
+    data = request.dict_storage_class
+    raw = json.dumps(data)
+    session.execute("INSERT INTO test.mode JSON %s" % raw)
+    return print('1')
 
 
-@app.route('/api/message/<email>', methods=['GET'])
+@app.route('/api/messages/<email>', methods=['GET'])
 def get(email):
-    rows = session.execute("SELECT* FROM mode WHERE email in %s", email)
+    rows = session.execute("SELECT* FROM mode WHERE email in %s" % email)
     return print(rows)
