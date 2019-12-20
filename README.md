@@ -27,3 +27,4 @@ example:
 
 <h4>Notes</h4>
 The database wipes out all the messages that are 300 seconds old.
+

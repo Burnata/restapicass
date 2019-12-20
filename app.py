@@ -2,7 +2,7 @@ import json
 import time
 from functools import wraps
 import flask
-from flask import Flask, Response
+from flask import Flask, Response, request
 from cassandra.cluster import Cluster
 from JSON import util
 from data.postmagic import magic
@@ -33,7 +33,7 @@ def json_api(f):
 
 @app.route('/api/send', methods=['POST'])
 def post():
-    data = json.loads(flask.request.from_values, encoding=dict)
+    data = json.loads(request.from_values, encoding=dict)
     magic_number = data["magic_number"]
     rows = session.execute('SELECT %s FROM mode', magic_number)
     for data["magic_number"] in rows:
@@ -42,17 +42,15 @@ def post():
 
 
 @app.route('/api/message', methods=['POST'])
-@json_api
 def posted():
-    data = json.load(flask.request.stream)
+    raw = json.dumps(request.json)
+    data = json.loads(raw)
     magic.create(email=data["email"], title=data["title"], content=data["content"], magic_number=data["magic_number"])
     magic.save()
-    return magic.get_data()
+    return print(magic.get_data())
 
 
 @app.route('/api/message/<email>', methods=['GET'])
-def get():
-    data = json.load(flask.request.from_values, encoding=dict)
-    email = data["<email>"]
+def get(email):
     rows = session.execute("SELECT* FROM mode WHERE email in %s", email)
     return print(rows)
