@@ -1,10 +1,10 @@
 requests
-flask==1.0
+flask==1.1.1
 cassandra-driver==3.20.2
 Cluster==1.4.1
 MarkupSafe==0.23
 six==1.9
-Jinja2==2.10
+Jinja2==2.10.1
 click==5.1
-Werkzeug==0.14
+Werkzeug==0.15
 itsdangerous==0.24

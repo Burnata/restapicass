@@ -1,10 +1,8 @@
 import json
-import time
-from flask import Flask, request, jsonify
+from flask import Flask, request
+from flask.json import jsonify
 from cassandra.cluster import Cluster
 from src.keyspace_creation import create
-from werkzeug.datastructures import ImmutableMultiDict
-
 app = Flask(__name__)
 
 # table creation script
@@ -25,20 +23,10 @@ def post():
 
 @app.route('/api/message', methods=['POST'])
 def posted():
-    data = dict(request.form)
-    kpop = data.keys()
-    pop = str(list(kpop))
-    onepop = pop.replace("[", "")
-    twopop = onepop.replace('{', "")
-    threepop = twopop.replace(']', "")
-    fourpop = threepop.replace('}', "")
-    fivepop = fourpop.replace('"', "")
-    sixpop = fivepop.replace("'", "")
-    rpop = sixpop.split(",")
-    rw = json.dumps(rpop)
-    #hw = jsonify(rw)
-    #session.execute("INSERT INTO test.mode JSON %s" % hw)
-    return rw
+    data = request.data.decode("utf-8")
+    session.execute("INSERT INTO test.mode JSON '%s'" % data)
+    ret = session.execute("SELECT * FROM test.mode")
+    return ret
 
 
 # @app.route('/api/message', methods=['POST'])
