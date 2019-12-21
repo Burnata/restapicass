@@ -21,14 +21,17 @@ def post():
     raw = session.prepare('SELECT * FROM test.mode WHERE magic_number=? ALLOW FILTERING')
     res = session.execute(raw, [datain])
     count = session.prepare('SELECT COUNT(*) FROM test.mode WHERE magic_number=? ALLOW FILTERING')
-    a = int(session.execute(count, [datain]))
+    li = json.dumps(list(session.execute(count, [datain])))
+    a = int(re.search(r'\d+', li).group())
+    a = a-1
     ral = session.prepare('SELECT content FROM test.mode WHERE magic_number=? ALLOW FILTERING')
     rek = session.execute(ral, [datain])
-    while a > 0:
-        race = json.dumps(list(rek)[a])
+    x = 0
+    while a > x:
+        race = json.dumps(list(rek)[x])
         dede = session.prepare("UPDATE test.mode USING TTL 1 SET title = 'x' WHERE content=?")
         session.execute(dede, [race])
-        a = a-1
+        x = x + 1
     return jsonify(list(res))
 
 
