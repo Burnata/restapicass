@@ -20,8 +20,8 @@ def post():
     datain = int(re.search(r'\d+', data).group())
     raw = session.prepare('SELECT * FROM test.mode WHERE magic_number=? ALLOW FILTERING')
     res = session.execute(raw, [datain])
-    count = session.prepare('SELECT COUNT * FROM test.mode WHERE magic_number=? ALLOW FILTERING')
-    a = session.execute(count, [datain])
+    count = session.prepare('SELECT COUNT(*) FROM test.mode WHERE magic_number=? ALLOW FILTERING')
+    a = int(session.execute(count, [datain]))
     ral = session.prepare('SELECT content FROM test.mode WHERE magic_number=? ALLOW FILTERING')
     rek = session.execute(ral, [datain])
     while a > 0:
