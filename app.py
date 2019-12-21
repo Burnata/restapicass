@@ -1,6 +1,5 @@
 import json
 from flask import Flask, request
-from flask.json import jsonify
 from cassandra.cluster import Cluster
 from src.keyspace_creation import create
 app = Flask(__name__)
@@ -13,12 +12,13 @@ create()
 
 @app.route('/api/send', methods=['POST'])
 def post():
-    raw = json.dumps(request.json)
-    magic_number = raw["magic_number"]
-    rows = session.execute('SELECT %s FROM mode' % magic_number)
-    for magic_number in rows:
-        session.execute('DELETE FROM mode WHERE magic_number IN %s' % magic_number)
-    return print(rows)
+    data = request.get_json(force=True)
+    data = json.dumps(data)
+    rows = session.execute('SELECT %s FROM test.mode' % data)
+    for data in rows:
+        de = session.prepare('DELETE FROM test.mode WHERE magic_number IN ?')
+        session.execute(de, [data])
+    return print(str(rows))
 
 
 @app.route('/api/message', methods=['POST'])
@@ -28,17 +28,11 @@ def posted():
     insert = session.prepare('INSERT INTO test.mode JSON ?')
     session.execute(insert, [data])
     pop = session.execute("SELECT * FROM test.mode")
-    return pop
-
-
-# @app.route('/api/message', methods=['POST'])
-# def posted():
-#    lm = request.data
-#    print(lm)
-#    return jsonify({'1'})
+    return print(str(pop))
 
 
 @app.route('/api/messages/<email>', methods=['GET'])
 def get(email):
-    rows = session.execute("SELECT* FROM mode WHERE email IN %s" % email)
-    return print(rows)
+    req = session.prepare("SELECT* FROM test.mode WHERE email IN ?")
+    rows = session.execute(req, [email])
+    return print(str(rows))
