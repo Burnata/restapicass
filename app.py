@@ -1,4 +1,7 @@
 import json
+import re
+import time
+
 from flask import Flask, request, jsonify
 from cassandra.cluster import Cluster
 from src.keyspace_creation import create
@@ -13,10 +16,12 @@ create()
 @app.route('/api/send', methods=['POST'])
 def post():
     data = request.get_json(force=True)
+    data = json.dumps(data)
+    datain = int(re.search(r'\d+', data).group())
     raw = session.prepare('SELECT * FROM test.mode WHERE magic_number=? ALLOW FILTERING')
-    session.execute(raw, [data])
-    de = session.prepare('DELETE FROM test.mode WHERE magic_number=? ALLOW FILTERING')
-    session.execute(de, [data])
+    session.execute(raw, [datain])
+    de = session.prepare('DELETE FROM test.mode WHERE magic_number IN ?')
+    session.execute(de, [datain])
     return jsonify(list(raw))
 
 
@@ -27,6 +32,8 @@ def posted():
     insert = session.prepare('INSERT INTO test.mode JSON ?')
     session.execute(insert, [data])
     pop = session.execute("SELECT * FROM test.mode")
+    timer = time.clock()
+
     return jsonify(list(pop))
 
 
