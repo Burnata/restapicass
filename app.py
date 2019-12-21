@@ -1,5 +1,5 @@
 import json
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from cassandra.cluster import Cluster
 from src.keyspace_creation import create
 app = Flask(__name__)
@@ -13,12 +13,11 @@ create()
 @app.route('/api/send', methods=['POST'])
 def post():
     data = request.get_json(force=True)
-    data = json.dumps(data)
-    rows = session.execute('SELECT %s FROM test.mode' % data)
-    for data in rows:
-        de = session.prepare('DELETE FROM test.mode WHERE magic_number IN ?')
-        session.execute(de, [data])
-    return print(str(rows))
+    raw = session.prepare('SELECT * FROM test.mode WHERE magic_number=? ALLOW FILTERING')
+    session.execute(raw, [data])
+    de = session.prepare('DELETE FROM test.mode WHERE magic_number=? ALLOW FILTERING')
+    session.execute(de, [data])
+    return jsonify(list(raw))
 
 
 @app.route('/api/message', methods=['POST'])
@@ -28,11 +27,11 @@ def posted():
     insert = session.prepare('INSERT INTO test.mode JSON ?')
     session.execute(insert, [data])
     pop = session.execute("SELECT * FROM test.mode")
-    return print(str(pop))
+    return jsonify(list(pop))
 
 
 @app.route('/api/messages/<email>', methods=['GET'])
 def get(email):
-    req = session.prepare("SELECT* FROM test.mode WHERE email IN ?")
+    req = session.prepare("SELECT* FROM test.mode WHERE email=? ALLOW FILTERING")
     rows = session.execute(req, [email])
-    return print(str(rows))
+    return jsonify(list(rows))

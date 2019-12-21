@@ -12,9 +12,9 @@ def create():
                     "'replication_factor' : 1 }")
     session.set_keyspace("test")
     session.execute('CREATE TABLE IF NOT EXISTS mode ('
-                    'email text PRIMARY KEY,'
+                    'email text,'
                     'title text,'
-                    'content text,'
+                    'content text PRIMARY KEY,'
                     'magic_number int'
                     ')')
 
