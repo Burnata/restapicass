@@ -23,10 +23,12 @@ def post():
 
 @app.route('/api/message', methods=['POST'])
 def posted():
-    data = str(request.get_data())
-    session.execute("INSERT INTO test.mode JSON '%s'" % data)
-    ret = session.execute("SELECT * FROM test.mode")
-    return ret
+    data = request.get_json(force=True)
+    data = json.dumps(data)
+    insert = session.prepare('INSERT INTO test.mode JSON ?')
+    session.execute(insert, [data])
+    pop = session.execute("SELECT * FROM test.mode")
+    return pop
 
 
 # @app.route('/api/message', methods=['POST'])
