@@ -1,13 +1,11 @@
 import json
 import re
-import time
-
 from flask import Flask, request, jsonify
 from cassandra.cluster import Cluster
-from src.keyspace_creation import create
-app = Flask(__name__)
+from src.keyspace_creation import create, start
 
-# table creation script
+start()
+app = Flask(__name__)
 cluster = Cluster(["cassandra"], protocol_version=3)
 session = cluster.connect()
 create()
@@ -15,6 +13,7 @@ create()
 
 @app.route('/api/send', methods=['POST'])
 def post():
+    start()
     data = request.get_json(force=True)
     data = json.dumps(data)
     datain = int(re.search(r'\d+', data).group())
@@ -37,6 +36,7 @@ def post():
 
 @app.route('/api/message', methods=['POST'])
 def posted():
+    start()
     data = request.get_json(force=True)
     data = json.dumps(data)
     insert = session.prepare('INSERT INTO test.mode JSON ? USING TTL 300')
@@ -47,6 +47,7 @@ def posted():
 
 @app.route('/api/messages/<email>', methods=['GET'])
 def get(email):
+    start()
     req = session.prepare("SELECT* FROM test.mode WHERE email=? ALLOW FILTERING")
     rows = session.execute(req, [email])
     return jsonify(list(rows))

@@ -9,6 +9,7 @@ ENV CASSANDRA_CQLSH_HOST 0.0.0.0
 ENV CASSANDRA_CQLSH_PORT 9042
 ENV FLASK_DEBUGG True
 RUN apk add --update python py-pip
+RUN pip install polling
 RUN apk add --no-cache gcc musl-dev linux-headers
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
