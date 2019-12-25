@@ -1,9 +1,13 @@
 # <h1>restapicass</h1>
+<H3><b>Installation</b></h3>
+To run the app download it. Then type in <code>docker-compose up</code>. 
+
+
 
 <H3><b>Post</b></h3>
 <br>
 There are two ways to post with this API
-<h4>first:</h4>
+<h6>first:</h6>
 through <code>/api/message</code> 
 this requests adds to the datebase the "message" in format
 <code>{"email":"vaild email adress","title":"text","content":"simple text","magic_number":int}</code>
@@ -12,7 +16,7 @@ this requests adds to the datebase the "message" in format
 example command:
 <code>curl -X POST localhost:8080/api/message -d '{"email":"jan.kowalski@example.com","title":"Interview","content":"simple text","magic_number":101}'</code>
 
-<h4>second:</h4>
+<h6>second:</h6>
 through <code>/api/send</code> which allows api-user to post all the messages that include specific <code>magic_number</code>
 and then <b>deletes</b> them from database
 

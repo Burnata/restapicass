@@ -1,8 +1,7 @@
 import json
-import re
 from flask import Flask, request, jsonify
 from cassandra.cluster import Cluster
-from src.keyspace_creation import create, start
+from src.keyspace_creation import create, start, delete
 
 start()
 app = Flask(__name__)
@@ -15,22 +14,10 @@ create()
 def post():
     start()
     data = request.get_json(force=True)
-    data = json.dumps(data)
-    datain = int(re.search(r'\d+', data).group())
+    datain = data["magic_number"]
     raw = session.prepare('SELECT * FROM test.mode WHERE magic_number=? ALLOW FILTERING')
     res = session.execute(raw, [datain])
-    count = session.prepare('SELECT COUNT(*) FROM test.mode WHERE magic_number=? ALLOW FILTERING')
-    li = json.dumps(list(session.execute(count, [datain])))
-    a = int(re.search(r'\d+', li).group())
-    a = a-1
-    ral = session.prepare('SELECT content FROM test.mode WHERE magic_number=? ALLOW FILTERING')
-    rek = session.execute(ral, [datain])
-    x = 0
-    while a > x:
-        race = json.dumps(list(rek)[x])
-        dede = session.prepare("UPDATE test.mode USING TTL 1 SET title = 'x' WHERE content=?")
-        session.execute(dede, [race])
-        x = x + 1
+    delete(datain)
     return jsonify(list(res))
 
 
